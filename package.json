@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "route-recognizer": "Sendanor/route-recognizer",
-    "rsvp": "Sendanor/rsvp"
+    "rsvp": "Sendanor/rsvp.js"
   },
   "devDependencies": {
     "brfs": "0.0.8",
