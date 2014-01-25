@@ -2238,6 +2238,32 @@ test("transitionTo will soak up resolved all models of active transition, includ
   router.transitionTo('postIndex').then(shouldNotHappen, assertAbort);
 });
 
+test("can reference leaf '/' route by leaf or parent name", function() {
+
+  var modelCalled = 0,
+      hasRedirected = false;
+
+  map(function(match) {
+    match("/").to('app', function(match) {
+      match("/").to('index');
+      match("/nest").to('nest', function(match) {
+        match("/").to('nest.index');
+      });
+    });
+  });
+
+  function assertOnRoute(name) {
+    var last = router.currentHandlerInfos[router.currentHandlerInfos.length-1];
+    equal(last.name, name);
+  }
+
+  transitionTo(router, 'app');
+  assertOnRoute('index');
+  transitionTo(router, 'nest');
+  assertOnRoute('nest.index');
+  transitionTo(router, 'app');
+  assertOnRoute('index');
+});
 
 test("resolved models can be swapped out within afterModel", function() {
 
@@ -2398,7 +2424,7 @@ test("Transition#followRedirects() returns a promise that fulfills when any redi
 
   handlers.about = {
     redirect: function() {
-      router.transitionTo('faq');
+      router.transitionTo('faq').then(null, shouldNotHappen);
     }
   };
 
@@ -2414,7 +2440,7 @@ test("Transition#followRedirects() returns a promise that fulfills when any redi
     };
 
     // followRedirects should just reject for non-redirecting transitions.
-    return router.transitionTo('about').followRedirects().catch(assertAbort);
+    return router.transitionTo('about').followRedirects().then(shouldNotHappen, assertAbort);
   });
 });
 
