@@ -11,8 +11,8 @@
     "url": "https://github.com/tildeio/router.js.git"
   },
   "dependencies": {
-    "route-recognizer": "Sendanor/route-recognizer",
-    "rsvp": "Sendanor/rsvp.js"
+    "route-recognizer": "sendanor/route-recognizer",
+    "rsvp": "sendanor/rsvp.js"
   },
   "devDependencies": {
     "brfs": "0.0.8",
