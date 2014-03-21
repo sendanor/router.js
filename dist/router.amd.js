@@ -7,9 +7,7 @@ define("router/handler-info",
     var oCreate = __dependency1__.oCreate;
     var serialize = __dependency1__.serialize;
     var promiseLabel = __dependency1__.promiseLabel;
-    var Rsvp = __dependency2__["default"];
-
-    var Promise = Rsvp.Promise;
+    var Promise = __dependency2__.Promise;
 
     function HandlerInfo(props) {
       if (props) {
@@ -230,7 +228,7 @@ define("router/router",
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __exports__) {
     "use strict";
     var RouteRecognizer = __dependency1__["default"];
-    var Rsvp = __dependency2__["default"];
+    var Promise = __dependency2__.Promise;
     var trigger = __dependency3__.trigger;
     var log = __dependency3__.log;
     var slice = __dependency3__.slice;
@@ -246,8 +244,6 @@ define("router/router",
     var TransitionAborted = __dependency5__.TransitionAborted;
     var NamedTransitionIntent = __dependency6__["default"];
     var URLTransitionIntent = __dependency7__["default"];
-
-    var Promise = Rsvp.Promise;
 
     var pop = Array.prototype.pop;
 
@@ -1259,9 +1255,7 @@ define("router/transition-state",
     var ResolvedHandlerInfo = __dependency1__.ResolvedHandlerInfo;
     var forEach = __dependency2__.forEach;
     var promiseLabel = __dependency2__.promiseLabel;
-    var Rsvp = __dependency3__["default"];
-
-    var Promise = Rsvp.Promise;
+    var Promise = __dependency3__.Promise;
 
     function TransitionState(other) {
       this.handlerInfos = [];
@@ -1371,14 +1365,12 @@ define("router/transition",
   ["rsvp","./handler-info","./utils","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
-    var Rsvp = __dependency1__["default"];
+    var Promise = __dependency1__.Promise;
     var ResolvedHandlerInfo = __dependency2__.ResolvedHandlerInfo;
     var trigger = __dependency3__.trigger;
     var slice = __dependency3__.slice;
     var log = __dependency3__.log;
     var promiseLabel = __dependency3__.promiseLabel;
-
-    var Promise = Rsvp.Promise;
 
     /**
       @private

@@ -4,9 +4,7 @@ var merge = require("./utils").merge;
 var oCreate = require("./utils").oCreate;
 var serialize = require("./utils").serialize;
 var promiseLabel = require("./utils").promiseLabel;
-var Rsvp = require("rsvp")["default"];
-
-var Promise = Rsvp.Promise;
+var Promise = require("rsvp").Promise;
 
 function HandlerInfo(props) {
   if (props) {

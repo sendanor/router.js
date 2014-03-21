@@ -1,6 +1,6 @@
 "use strict";
 var RouteRecognizer = require("route-recognizer")["default"];
-var Rsvp = require("rsvp")["default"];
+var Promise = require("rsvp").Promise;
 var trigger = require("./utils").trigger;
 var log = require("./utils").log;
 var slice = require("./utils").slice;
@@ -16,8 +16,6 @@ var Transition = require("./transition").Transition;
 var TransitionAborted = require("./transition").TransitionAborted;
 var NamedTransitionIntent = require("./transition-intent/named-transition-intent")["default"];
 var URLTransitionIntent = require("./transition-intent/url-transition-intent")["default"];
-
-var Promise = Rsvp.Promise;
 
 var pop = Array.prototype.pop;
 
