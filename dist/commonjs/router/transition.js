@@ -1,10 +1,12 @@
 "use strict";
-var Promise = require("rsvp/promise")["default"];
+var Rsvp = require("rsvp")["default"];
 var ResolvedHandlerInfo = require("./handler-info").ResolvedHandlerInfo;
 var trigger = require("./utils").trigger;
 var slice = require("./utils").slice;
 var log = require("./utils").log;
 var promiseLabel = require("./utils").promiseLabel;
+
+var Promise = Rsvp.Promise;
 
 /**
   @private
