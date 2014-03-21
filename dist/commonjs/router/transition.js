@@ -1,6 +1,5 @@
 "use strict";
-var reject = require("rsvp").reject;
-var resolve = require("rsvp").resolve;
+var Promise = require("rsvp/promise")["default"];
 var ResolvedHandlerInfo = require("./handler-info").ResolvedHandlerInfo;
 var trigger = require("./utils").trigger;
 var slice = require("./utils").slice;
@@ -26,7 +25,7 @@ function Transition(router, intent, state, error) {
   this.queryParams = {};
 
   if (error) {
-    this.promise = reject(error);
+    this.promise = Promise.reject(error);
     return;
   }
 
@@ -50,21 +49,21 @@ function Transition(router, intent, state, error) {
     this.sequence = Transition.currentSequence++;
     this.promise = state.resolve(router.async, checkForAbort, this)['catch'](function(result) {
       if (result.wasAborted) {
-        throw logAbort(transition);
+        return Promise.reject(logAbort(transition));
       } else {
         transition.trigger('error', result.error, transition, result.handlerWithError);
         transition.abort();
-        throw result.error;
+        return Promise.reject(result.error);
       }
     }, promiseLabel('Handle Abort'));
   } else {
-    this.promise = resolve(this.state);
+    this.promise = Promise.resolve(this.state);
     this.params = {};
   }
 
   function checkForAbort() {
     if (transition.isAborted) {
-      return reject(undefined, promiseLabel("Transition aborted - reject"));
+      return Promise.reject(undefined, promiseLabel("Transition aborted - reject"));
     }
   }
 }
@@ -184,7 +183,7 @@ Transition.prototype = {
 
     Note: This method is also aliased as `send`
 
-    @param {Boolean} ignoreFailure the name of the event to fire
+    @param {Boolean} [ignoreFailure=false] a boolean specifying whether unhandled events throw an error
     @param {String} name the name of the event to fire
    */
   trigger: function (ignoreFailure) {
@@ -216,7 +215,7 @@ Transition.prototype = {
       if (router.activeTransition) {
         return router.activeTransition.followRedirects();
       }
-      throw reason;
+      return Promise.reject(reason);
     });
   },
 

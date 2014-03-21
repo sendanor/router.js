@@ -1,10 +1,17 @@
 "use strict";
 var slice = Array.prototype.slice;
 
-function isArray(test) {
-  return Object.prototype.toString.call(test) === "[object Array]";
+var _isArray;
+if (!Array.isArray) {
+  _isArray = function (x) {
+    return Object.prototype.toString.call(x) === "[object Array]";
+  };
+} else {
+  _isArray = Array.isArray;
 }
 
+var isArray = _isArray;
+exports.isArray = isArray;
 function merge(hash, other) {
   for (var prop in other) {
     if (other.hasOwnProperty(prop)) { hash[prop] = other[prop]; }
@@ -16,7 +23,7 @@ var oCreate = Object.create || function(proto) {
   F.prototype = proto;
   return new F();
 };
-
+exports.oCreate = oCreate;
 /**
   @private
 
@@ -34,7 +41,7 @@ function extractQueryParams(array) {
   }
 }
 
-/**
+exports.extractQueryParams = extractQueryParams;/**
   @private
 
   Coerces query param properties and array elements into strings.
@@ -64,7 +71,7 @@ function log(router, sequence, msg) {
   }
 }
 
-function bind(fn, context) {
+exports.log = log;function bind(fn, context) {
   var boundArgs = arguments;
   return function(value) {
     var args = slice.call(boundArgs, 2);
@@ -73,7 +80,7 @@ function bind(fn, context) {
   };
 }
 
-function isParam(object) {
+exports.bind = bind;function isParam(object) {
   return (typeof object === "string" || object instanceof String || typeof object === "number" || object instanceof Number);
 }
 
@@ -82,7 +89,7 @@ function forEach(array, callback) {
   for (var i=0, l=array.length; i<l && false !== callback(array[i]); i++) { }
 }
 
-/**
+exports.forEach = forEach;/**
   @private
 
   Serializes a handler using its custom `serialize` method or
@@ -118,7 +125,7 @@ function serialize(handler, model, names) {
   return object;
 }
 
-function trigger(router, handlerInfos, ignoreFailure, args) {
+exports.serialize = serialize;function trigger(router, handlerInfos, ignoreFailure, args) {
   if (router.triggerEvent) {
     router.triggerEvent(handlerInfos, ignoreFailure, args);
     return;
@@ -151,7 +158,7 @@ function trigger(router, handlerInfos, ignoreFailure, args) {
   }
 }
 
-function getChangelist(oldObject, newObject) {
+exports.trigger = trigger;function getChangelist(oldObject, newObject) {
   var key;
   var results = {
     all: {},
@@ -203,20 +210,11 @@ function getChangelist(oldObject, newObject) {
   return didChange && results;
 }
 
-function promiseLabel(label) {
+exports.getChangelist = getChangelist;function promiseLabel(label) {
   return 'Router: ' + label;
 }
 
-exports.trigger = trigger;
-exports.log = log;
-exports.oCreate = oCreate;
-exports.merge = merge;
-exports.extractQueryParams = extractQueryParams;
-exports.bind = bind;
-exports.isParam = isParam;
-exports.forEach = forEach;
+exports.promiseLabel = promiseLabel;exports.merge = merge;
 exports.slice = slice;
-exports.serialize = serialize;
-exports.getChangelist = getChangelist;
+exports.isParam = isParam;
 exports.coerceQueryParamsToString = coerceQueryParamsToString;
-exports.promiseLabel = promiseLabel;

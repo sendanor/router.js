@@ -2,7 +2,7 @@
 var ResolvedHandlerInfo = require("./handler-info").ResolvedHandlerInfo;
 var forEach = require("./utils").forEach;
 var promiseLabel = require("./utils").promiseLabel;
-var resolve = require("rsvp").resolve;
+var Promise = require("rsvp/promise")["default"];
 
 function TransitionState(other) {
   this.handlerInfos = [];
@@ -42,16 +42,16 @@ TransitionState.prototype = {
     var wasAborted = false;
 
     // The prelude RSVP.resolve() asyncs us into the promise land.
-    return resolve(null, this.promiseLabel("Start transition"))
+    return Promise.resolve(null, this.promiseLabel("Start transition"))
     .then(resolveOneHandlerInfo, null, this.promiseLabel('Resolve handler'))['catch'](handleError, this.promiseLabel('Handle error'));
 
     function innerShouldContinue() {
-      return resolve(shouldContinue(), promiseLabel("Check if should continue"))['catch'](function(reason) {
+      return Promise.resolve(shouldContinue(), promiseLabel("Check if should continue"))['catch'](function(reason) {
         // We distinguish between errors that occurred
         // during resolution (e.g. beforeModel/model/afterModel),
         // and aborts due to a rejecting promise from shouldContinue().
         wasAborted = true;
-        throw reason;
+        return Promise.reject(reason);
       }, promiseLabel("Handle abort"));
     }
 
@@ -61,12 +61,12 @@ TransitionState.prototype = {
       var handlerInfos = currentState.handlerInfos;
       var errorHandlerIndex = payload.resolveIndex >= handlerInfos.length ?
                               handlerInfos.length - 1 : payload.resolveIndex;
-      throw {
+      return Promise.reject({
         error: error,
         handlerWithError: currentState.handlerInfos[errorHandlerIndex].handler,
         wasAborted: wasAborted,
         state: currentState
-      };
+      });
     }
 
     function proceed(resolvedHandlerInfo) {
@@ -106,4 +106,4 @@ TransitionState.prototype = {
   }
 };
 
-exports.TransitionState = TransitionState;
+exports["default"] = TransitionState;

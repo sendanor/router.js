@@ -1,5 +1,5 @@
 import { module, flushBackburner, transitionTo, transitionToWithAbort, shouldNotHappen, shouldBeTransition } from "tests/test_helpers";
-import { Router } from "router";
+import Router from "router";
 import { resolve, configure, reject, Promise } from "rsvp";
 
 var router, url, handlers, expectedUrl, actions;
@@ -139,7 +139,7 @@ test("Handling a URL passes in query params", function() {
 
   var indexHandler = {
     model: function(params, transition) {
-      deepEqual(transition.queryParams, { sort: 'date', filter: true });
+      deepEqual(transition.queryParams, { sort: 'date', filter: 'true' });
     },
     events: {
       finalizeQueryParamChange: function(params, finalParams) {
@@ -158,7 +158,7 @@ test("Handling a URL passes in query params", function() {
 
   router.handleURL("/index?sort=date&filter");
   flushBackburner();
-  deepEqual(router.state.queryParams, { sort: 'date', filter: true });
+  deepEqual(router.state.queryParams, { sort: 'date', filter: 'true' });
 });
 
 test("handleURL accepts slash-less URLs", function() {
@@ -2293,7 +2293,7 @@ test("resolved models can be swapped out within afterModel", function() {
 
 
 test("String/number args in transitionTo are treated as url params", function() {
-  expect(10);
+  expect(11);
 
   var adminParams = { id: "1" },
       adminModel = { id: "1" },
@@ -2465,7 +2465,7 @@ test("Returning a redirecting Transition from a model hook doesn't cause things 
 test("Generate works w queryparams", function() {
   equal(router.generate('index'), '/index', "just index");
   equal(router.generate('index', { queryParams: { foo: '123' } }), '/index?foo=123', "just index");
-  equal(router.generate('index', { queryParams: { foo: '123', bar: '456' } }), '/index?foo=123&bar=456', "just index");
+  equal(router.generate('index', { queryParams: { foo: '123', bar: '456' } }), '/index?bar=456&foo=123', "just index");
 });
 
 test("errors in enter/setup hooks fire `error`", function() {
@@ -2504,6 +2504,53 @@ test("errors in enter/setup hooks fire `error`", function() {
     equal(reason, "OMG SETUP", "setup's error was propagated");
     delete handlers.index.setup;
   }).then(start, shouldNotHappen);
+});
+
+test("invalidating parent model with different string/numeric parameters invalidates children", function() {
+
+  map(function(match) {
+    match("/:p").to("parent", function(match) {
+      match("/:c").to("child");
+    });
+  });
+
+  expect(8);
+
+  var count = 0;
+  handlers = {
+    parent: {
+      model: function(params) {
+        ok(true, "parent model called");
+        return { id: params.p };
+      },
+      setup: function(model) {
+        if (count === 0) {
+          deepEqual(model, { id: '1' });
+        } else {
+          deepEqual(model, { id: '2' });
+        }
+      }
+    },
+    child: {
+      model: function(params) {
+        ok(true, "child model called");
+        return { id: params.c };
+      },
+      setup: function(model) {
+        if (count === 0) {
+          deepEqual(model, { id: '1' });
+        } else {
+          deepEqual(model, { id: '1' });
+        }
+      }
+    }
+  };
+
+  transitionTo(router, 'child', '1', '1');
+  count = 1;
+  transitionTo(router, 'child', '2', '1');
+
+
 });
 
 module("Multiple dynamic segments per route");
