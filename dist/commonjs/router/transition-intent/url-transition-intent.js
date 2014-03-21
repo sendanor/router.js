@@ -1,6 +1,6 @@
 "use strict";
-var TransitionIntent = require("../transition-intent").TransitionIntent;
-var TransitionState = require("../transition-state").TransitionState;
+var TransitionIntent = require("../transition-intent")["default"];
+var TransitionState = require("../transition-state")["default"];
 var UnresolvedHandlerInfoByParam = require("../handler-info").UnresolvedHandlerInfoByParam;
 var oCreate = require("../utils").oCreate;
 var merge = require("../utils").merge;
@@ -61,4 +61,4 @@ function UnrecognizedURLError(message) {
   this.name = "UnrecognizedURLError";
 }
 
-exports.URLTransitionIntent = URLTransitionIntent;
+exports["default"] = URLTransitionIntent;

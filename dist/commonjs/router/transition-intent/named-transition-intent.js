@@ -1,6 +1,6 @@
 "use strict";
-var TransitionIntent = require("../transition-intent").TransitionIntent;
-var TransitionState = require("../transition-state").TransitionState;
+var TransitionIntent = require("../transition-intent")["default"];
+var TransitionState = require("../transition-state")["default"];
 var UnresolvedHandlerInfoByParam = require("../handler-info").UnresolvedHandlerInfoByParam;
 var UnresolvedHandlerInfoByObject = require("../handler-info").UnresolvedHandlerInfoByObject;
 var isParam = require("../utils").isParam;
@@ -33,7 +33,6 @@ NamedTransitionIntent.prototype.applyToHandlers = function(oldState, handlers, g
   var objects = this.contexts.slice(0);
 
   var invalidateIndex = handlers.length;
-  var nonDynamicIndexes = [];
 
   // Pivot handlers are provided for refresh transitions
   if (this.pivotHandler) {
@@ -67,7 +66,6 @@ NamedTransitionIntent.prototype.applyToHandlers = function(oldState, handlers, g
       // with empty params. This will cause the `model`
       // hook to be called with empty params, which is desirable.
       newHandlerInfo = this.createParamHandlerInfo(name, handler, result.names, objects, oldHandlerInfo);
-      nonDynamicIndexes.unshift(i);
     }
 
     if (checkingIfActive) {
@@ -103,7 +101,7 @@ NamedTransitionIntent.prototype.applyToHandlers = function(oldState, handlers, g
   }
 
   if (!isIntermediate) {
-    this.invalidateNonDynamicHandlers(newState.handlerInfos, nonDynamicIndexes, invalidateIndex);
+    this.invalidateChildren(newState.handlerInfos, invalidateIndex);
   }
 
   merge(newState.queryParams, oldState.queryParams);
@@ -112,17 +110,11 @@ NamedTransitionIntent.prototype.applyToHandlers = function(oldState, handlers, g
   return newState;
 };
 
-NamedTransitionIntent.prototype.invalidateNonDynamicHandlers = function(handlerInfos, indexes, invalidateIndex) {
-  forEach(indexes, function(i) {
-    if (i >= invalidateIndex) {
-      var handlerInfo = handlerInfos[i];
-      handlerInfos[i] = new UnresolvedHandlerInfoByParam({
-        name: handlerInfo.name,
-        handler: handlerInfo.handler,
-        params: {}
-      });
-    }
-  });
+NamedTransitionIntent.prototype.invalidateChildren = function(handlerInfos, invalidateIndex) {
+  for (var i = invalidateIndex, l = handlerInfos.length; i < l; ++i) {
+    var handlerInfo = handlerInfos[i];
+    handlerInfos[i] = handlerInfos[i].getUnresolved();
+  }
 };
 
 NamedTransitionIntent.prototype.getHandlerInfoForDynamicSegment = function(name, handler, names, objects, oldHandlerInfo, targetRouteName) {
@@ -193,4 +185,4 @@ NamedTransitionIntent.prototype.createParamHandlerInfo = function(name, handler,
   });
 };
 
-exports.NamedTransitionIntent = NamedTransitionIntent;
+exports["default"] = NamedTransitionIntent;
